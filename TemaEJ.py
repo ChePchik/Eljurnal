@@ -1,7 +1,7 @@
 # import re 
-import os
+# import os
 import funcEJ as f
-clear = lambda: os.system('cls')
+# clear = lambda: os.system('cls')
 
 while True:
   print('-----------------------------------')
@@ -14,6 +14,7 @@ while True:
   print("3. Выставить темы")
   print("4. Проверить столбцы")
   print("5. Закрыть занятие")
+  print("6. Открыть занятие")
 
   choice = int(input(''))
   diir = "D:\\Desktop\\Desktop\\Пары\\2022-2023\\_журнал\\txt"
@@ -60,6 +61,18 @@ while True:
       f.closeTheory(diir,ch51)
     elif ch5 == 2:
       f.closePractic(diir,ch51)
+    else:
+      print('Попробуй ещё')
+
+
+  elif choice==6:
+    ch6 = int(input('Теория - 1\\ Практика - 2: '))
+    ch61 = int(input('Все -1. Или конкретно id:  '))
+
+    if ch6 == 1:
+      f.openTheory(diir,ch61)
+    elif ch6 == 2:
+      f.openPractic(diir,ch61)
     else:
       print('Попробуй ещё')
 

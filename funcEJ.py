@@ -1,14 +1,16 @@
-from cgi import print_form
 import re 
 import requests
-import json
+import os
+# import json
 
 url_tab_rows = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_rows"
 url_save = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_work_lesson_subject"
 url_close = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action"
+url_open = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action"
 
-dates = '07.12.2022'
-cookie = 'ssuz_sessionid=cjyo4userpyh8lcaathzwsx26y51y5zd'
+dates = '13.12.2022'
+cookie = 'ssuz_sessionid=1zwiqokc8nvm2ntppz96fn5g05ghwwes'
+
 
 name = ''
 les_id = 0
@@ -463,6 +465,132 @@ def closePractic(diir, ch51: int):
 
             response = requests.post(
                 url_close, headers=headers, data=payload_save)
+            data = response.json()
+            print(el['group'])
+            print(i, response.status_code, data)
+
+              # print(lines[i], rows[i]['id'])
+          #   text =i.rstrip()
+          #   print(text)
+      except Exception as e:
+        print(e)
+
+      finally:
+        file.close()
+      print()
+
+
+def openTheory(diir, ch61: int):
+  spisok_close = ""
+  if ch61 == -1:
+    spisok_close = spisok
+  else:
+    spisok_close = [spisok[ch61]]
+  
+  for el in spisok_close:
+    payload = payload_rows_teory(dates,el["group_id"],el["subject_id"])
+    response = requests.post(url_tab_rows, headers=headers, data=payload)
+    data = response.json()
+    rows = data['rows'][0]['lessons']
+
+    with open(diir+"\\лекции\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
+    # считываем строчки из файла
+      try:
+        lines = file.readlines()
+        for i in range(len(lines)):
+            # name_lessons = lines[i]
+            # print(name)
+            les_id = rows[i]['id']
+            # print(les_id,name)
+            payload_save = {
+                "lesson_id": les_id,
+                "student_id": el['student_id'],
+                "unit_id": "22",
+                "period_id": "30",
+                "date_from": "2022-09-01T00:00:00",
+                "date_to": dates,
+                "practical": "",
+                "slave_mode": "1",
+                "month": "",
+                "group_id": el['group_id'],
+                "subject": "0",
+                "subject_gen_pr_id": "0",
+                "exam_subject_id": "0",
+                "subject_sub_group_obj":	"{\"subject_id\": "+el['subject_id']+"}",
+                "subject_id": el['subject_id'],
+            }
+
+            response = requests.post(url_open, headers=headers, data=payload_save)
+            data = response.json()
+            print(el['group'])
+            print(i, response.status_code, data)
+
+            # print(lines[i], rows[i]['id'])
+        #   text =i.rstrip()
+        #   print(text)
+      except Exception as e:
+          print(e)
+
+      finally:
+          file.close()
+          print()
+
+
+def openPractic(diir, ch61: int):
+  spisok_close = ""
+  if ch61 == -1:
+    spisok_close = spisok_practicy
+  else:
+    spisok_close = [spisok_practicy[ch61]]        
+
+  for el in spisok_close:
+    payload = payload_rows_practicy(
+      dates, el["group_id"],
+      el["subject_id"],
+      0 if (el['id']+1) % 3 == 0 else el["sub_group_id"]
+    )
+    response = requests.post(url_tab_rows, headers=headers, data=payload)
+
+    data = response.json()
+    rows = data['rows'][0]['lessons']
+
+    with open(diir+"\\практика\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
+      # считываем строчки из файла
+      try:
+          lines = file.readlines()
+          for i in range(len(lines)):
+            # name_lessons = lines[i]
+            # print(name)
+            les_id = rows[i]['id']
+            # print(les_id,name)
+            payload_save = {
+              "lesson_id": les_id,
+              "student_id": el['student_id'],
+              "practical": "1",
+              "unit_id": "22",
+              "period_id": "30",
+              "date_from": "2022-09-01T00:00:00",
+              "date_to": dates,
+              "slave_mode": "1",
+              "month": "",
+              "group_id": el['group_id'],
+              "subject": "0",
+              "subject_gen_pr_id": "0",
+              "exam_subject_id": "0",
+              "subject_sub_group_obj": "",
+              "subject_id": el['subject_id'],
+              "view_lessons": "false",
+              "subperiod": "399",
+              "mark": ""
+            }
+            if (el['id']+1) % 3 == 0:
+              payload["subject_sub_group_obj"] = "{\"subject_id\": "+el['subject_id']+"}"
+            else:
+              payload["subject_sub_group_obj"] = "{\"subject_id\": " + \
+                el['subject_id']+", \"sub_group_id\": "+el['subject_id']+"}"
+
+            response = requests.post(
+                url_open, headers=headers, data=payload_save)
             data = response.json()
             print(el['group'])
             print(i, response.status_code, data)
