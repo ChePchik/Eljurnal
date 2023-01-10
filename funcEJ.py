@@ -8,8 +8,8 @@ url_save = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_s
 url_close = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action"
 url_open = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action"
 
-dates = '13.12.2022'
-cookie = 'ssuz_sessionid=1zwiqokc8nvm2ntppz96fn5g05ghwwes'
+dates = '05.01.2023'
+cookie = 'ssuz_sessionid=9xfegg7mz20luln4quk0iy217om4b90a'
 
 
 name = ''
@@ -28,8 +28,8 @@ spisok = [
     {"group": "тис_исп320рв", "student_id": 61680, "group_id": 4087,"subject_id":"6190", "id":9},#9
     {"group": "опбд_сис221", "student_id": 69973, "group_id": 4644,"subject_id":"5548", "id":10},#10
     {"group": "опбд_сис221в", "student_id": 69998, "group_id": 4653,"subject_id":"5548", "id":11},#11
-    # {"group": "обвп_исп419р", "student_id": 48698, "group_id": 2848,"subject_id":"8010", "id":12},#12
-    # {"group": "обвп_исп419рв", "student_id": 49324, "group_id": 2945,"subject_id":"8010", "id":13},#13
+    {"group": "обвп_исп419р", "student_id": 48698, "group_id": 2848,"subject_id":"8010", "id":12},#12
+    {"group": "обвп_исп419рв", "student_id": 49324, "group_id": 2945,"subject_id":"8010", "id":13},#13
 ]
 
 spisok_practicy = [
@@ -57,9 +57,9 @@ spisok_practicy = [
     {"group": "опбд_сис221в", "student_id": '69973', "group_id": '4644',"subject_id":"5548","sub_group_id":'13641', "id":16},
     {"group": "опбд_сис221в", "student_id": '69998', "group_id": '4653',"subject_id":"5548", "sub_group_id":'13641',"id":17},
 
-    # {"group": "обвп_исп419р", "student_id": '48698', "group_id": '2848',"subject_id":"8010","sub_group_id":'13379', "id":18},
-    # {"group": "обвп_исп419рв", "student_id": '48698', "group_id": '2848',"subject_id":"8010","sub_group_id":'13380', "id":19},
-    # {"group": "обвп_исп419рв", "student_id": '49324', "group_id": '2945',"subject_id":"8010", "id":20},
+    {"group": "обвп_исп419р", "student_id": '48698', "group_id": '2848',"subject_id":"8010","sub_group_id":'13379', "id":18},
+    {"group": "обвп_исп419рв", "student_id": '48698', "group_id": '2848',"subject_id":"8010","sub_group_id":'13380', "id":19},
+    {"group": "обвп_исп419рв", "student_id": '49324', "group_id": '2945',"subject_id":"8010", "id":20},
 ]
 
 headers = {
@@ -150,10 +150,20 @@ def createFile(diir):
         finally:
           file2.close()
 
-def dubleFileAll(diir,ch2):
+def dubleFileAll(diir,ch2,ch21):
+  # spisok1 = ''
+  if ch2==1:
+    diir = diir+'\\лекции'
+    spisok1 = [spisok[ch21]]
+
+  elif ch2==2:
+    diir = diir+'\\практика'
+    spisok1 = [spisok_practicy[ch21]]
+
+  else:
+    print('Такого действия нет')
   spisok1 = spisok
-  if(ch2!=-1):
-    spisok1 = [spisok[ch2]]
+
   for name in spisok1:
     data_list= []
     with open(diir+"\\"+name['group']+'.txt',encoding="utf-8") as file:

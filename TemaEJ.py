@@ -32,9 +32,10 @@ while True:
       # ch2 = int(input('Какой индекс:  '))
 
   elif choice==2:
-    ch2 = int(input('Все -1. Или конкретно id:  '))
+    ch2 = int(input('Теория - 1\\ Практика - 2: '))
+    ch21 = int(input('Все -1. Или конкретно id:  '))
     print(f.spisok)
-    f.dubleFileAll(diir,ch2)
+    f.dubleFileAll(diir,ch2,ch21)
 
   elif choice==3:
     ch3 = int(input('Теория - 1\\ Практика - 2: '))
