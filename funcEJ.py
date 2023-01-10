@@ -1,66 +1,25 @@
 import re 
 import requests
 import os
-# import json
+from dotenv import load_dotenv
+load_dotenv()
+
+import spisok_students as s
+
+
+dates = os.getenv('DATES')
+cookie = os.getenv('COOKIE')
+diir = os.getenv('DIIR')
 
 url_tab_rows = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_rows"
 url_save = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_work_lesson_subject"
 url_close = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action"
 url_open = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action"
-
-dates = '05.01.2023'
-cookie = 'ssuz_sessionid=9xfegg7mz20luln4quk0iy217om4b90a'
-
-
 name = ''
 les_id = 0
 
-spisok = [
-    {"group": "питпм_исп221а", "student_id": 70002, "group_id": 4649,"subject_id":"6132", "id":0},#0
-    {"group": "питпм_исп221ав", "student_id": 70027, "group_id": 4659,"subject_id":"6132", "id":1},#1
-    {"group": "рмп_исп320а", "student_id": 61655, "group_id": 4078,"subject_id":"6133", "id":2},#2
-    {"group": "рмп_исп320ав", "student_id": 61683, "group_id": 4079,"subject_id":"6133", "id":3},#3
-    {"group": "питпм_исп320п", "student_id": 61684, "group_id": 4080,"subject_id":"6132", "id":4},#4
-    {"group": "питпм_исп320пв", "student_id": 61709, "group_id": 4081,"subject_id":"6132", "id":5},#5
-    {"group": "ркис_исп320р", "student_id": 61712, "group_id": 4086,"subject_id":"6189", "id":6},#6
-    {"group": "ркис_исп320рв", "student_id": 61680, "group_id": 4087,"subject_id":"6189", "id":7},#8
-    {"group": "тис_исп320р", "student_id": 61712, "group_id": 4086,"subject_id":"6190", "id":8},#7
-    {"group": "тис_исп320рв", "student_id": 61680, "group_id": 4087,"subject_id":"6190", "id":9},#9
-    {"group": "опбд_сис221", "student_id": 69973, "group_id": 4644,"subject_id":"5548", "id":10},#10
-    {"group": "опбд_сис221в", "student_id": 69998, "group_id": 4653,"subject_id":"5548", "id":11},#11
-    {"group": "обвп_исп419р", "student_id": 48698, "group_id": 2848,"subject_id":"8010", "id":12},#12
-    {"group": "обвп_исп419рв", "student_id": 49324, "group_id": 2945,"subject_id":"8010", "id":13},#13
-]
-
-spisok_practicy = [
-    {"group": "питпм_исп221а", "student_id": '70016', "group_id": '4649',"subject_id":'6132',"sub_group_id":'13664', "id":0},#1
-    {"group": "питпм_исп221ав", "student_id": '70016', "group_id": '4649',"subject_id":'6132',"sub_group_id":'13665', "id":1},#2
-    {"group": "питпм_исп221ав", "student_id": '70027', "group_id": '4659',"subject_id":'6132', "id":2},
-
-    {"group": "рмп_исп320а", "student_id": '61655', "group_id": '4078',"subject_id":"6133","sub_group_id":'12601', "id":3},
-    {"group": "рмп_исп320ав", "student_id": '61655', "group_id": '4078',"subject_id":"6133","sub_group_id":'12602', "id":4},
-    {"group": "рмп_исп320ав", "student_id": '61683', "group_id": '4079',"subject_id":"6133", "id":5},
-
-    {"group": "питпм_исп320п", "student_id": '61684', "group_id": '4080',"subject_id":"6132","sub_group_id":'12640', "id":6},
-    {"group": "питпм_исп320пв", "student_id": '61684', "group_id": '4080',"subject_id":"6132","sub_group_id":'12641', "id":7},
-    {"group": "питпм_исп320пв", "student_id": '61709', "group_id": '4081',"subject_id":"6132", "id":8},
-
-    {"group": "ркис_исп320р", "student_id": '61712', "group_id": '4086',"subject_id":"6189","sub_group_id":'11776', "id":9},
-    {"group": "ркис_исп320рв", "student_id": '61712', "group_id": '4086',"subject_id":"6189","sub_group_id":'11777', "id":10},
-    {"group": "ркис_исп320рв", "student_id": '61680', "group_id": '4087',"subject_id":"6189", "id":11},
-
-    {"group": "тис_исп320р", "student_id": '61712', "group_id": '4086',"subject_id":"6190","sub_group_id":'12654', "id":12},
-    {"group": "тис_исп320рв", "student_id": '61712', "group_id": '4086',"subject_id":"6190","sub_group_id":'12655', "id":13},
-    {"group": "тис_исп320рв", "student_id": '61680', "group_id": '4087',"subject_id":"6190", "id":14},
-
-    {"group": "опбд_сис221", "student_id": '69973', "group_id": '4644',"subject_id":"5548","sub_group_id":'13640', "id":15},
-    {"group": "опбд_сис221в", "student_id": '69973', "group_id": '4644',"subject_id":"5548","sub_group_id":'13641', "id":16},
-    {"group": "опбд_сис221в", "student_id": '69998', "group_id": '4653',"subject_id":"5548", "sub_group_id":'13641',"id":17},
-
-    {"group": "обвп_исп419р", "student_id": '48698', "group_id": '2848',"subject_id":"8010","sub_group_id":'13379', "id":18},
-    {"group": "обвп_исп419рв", "student_id": '48698', "group_id": '2848',"subject_id":"8010","sub_group_id":'13380', "id":19},
-    {"group": "обвп_исп419рв", "student_id": '49324', "group_id": '2945',"subject_id":"8010", "id":20},
-]
+spisok = s.spisok
+spisok_practicy = s.spisok_practicy
 
 headers = {
     'Host': 'ssuz.vip.edu35.ru',
@@ -120,7 +79,7 @@ def payload_rows_practicy_save_tema(les_id,student_id,dates,group_id,subject_id,
               "student_id": student_id,
               "unit_id": "22",
               "period_id": "30",
-              "date_from": "2022-09-01T00:00:00",
+              "date_from":"2023-01-01T00:00:00",
               "date_to": dates,
               "practical": "1",
               "slave_mode": "1",
@@ -140,24 +99,31 @@ def payload_rows_practicy_save_tema(les_id,student_id,dates,group_id,subject_id,
     payload["subject_sub_group_obj"] = "{\"subject_id\": "+subject_id+", \"sub_group_id\": "+sub_group_id+"}"
   return payload
 
-def createFile(diir):
-  for name in spisok:
-        try:
-          with open(diir+"\\"+name['group']+'.txt','w',encoding="utf-8") as file2:
-            print(name['group'])
-        except Exception as e:
-          print(e)
-        finally:
-          file2.close()
+def createFile(ch1):
+  diirloc = diir
+  if(ch1==0):
+    diirloc = diirloc+'\\лекции'
+  elif(ch1==1):
+    diirloc = diirloc+'\\практика'
 
-def dubleFileAll(diir,ch2,ch21):
-  # spisok1 = ''
+  for name in spisok:
+    try:
+      with open(diirloc+"\\"+name['group']+'.txt','w',encoding="utf-8") as file2:
+        print(name['group'])
+    except Exception as e:
+      print(e)
+    finally:
+      file2.close()
+
+def dubleFileAll(ch2,ch21):
+  diirloc = diir
+
   if ch2==1:
-    diir = diir+'\\лекции'
+    diirloc = diirloc+'\\лекции'
     spisok1 = [spisok[ch21]]
 
   elif ch2==2:
-    diir = diir+'\\практика'
+    diirloc = diirloc+'\\практика'
     spisok1 = [spisok_practicy[ch21]]
 
   else:
@@ -166,7 +132,7 @@ def dubleFileAll(diir,ch2,ch21):
 
   for name in spisok1:
     data_list= []
-    with open(diir+"\\"+name['group']+'.txt',encoding="utf-8") as file:
+    with open(diirloc+"\\"+name['group']+'.txt',encoding="utf-8") as file:
       try:
         lines = file.readlines()
         for i in lines:
@@ -187,7 +153,7 @@ def dubleFileAll(diir,ch2,ch21):
 
 
     try:
-      with open(diir+"\\rasp_"+name['group']+'.txt','w',encoding="utf-8") as file2:
+      with open(diirloc+"\\rasp_"+name['group']+'.txt','w',encoding="utf-8") as file2:
         # file2.write("\n".join(spisok).join("\n"));
         for item in data_list:
           file2.write("%s\n" % item)
@@ -200,7 +166,9 @@ def dubleFileAll(diir,ch2,ch21):
       # print(name['group'],'Готово')
       file2.close()
 
-def saveThemesPracticy(diir,ch31):
+def saveThemesPracticy(ch31):
+  diirloc = diir
+
   if ch31 == -1:
     spisok_close = spisok_practicy
   else:
@@ -221,7 +189,7 @@ def saveThemesPracticy(diir,ch31):
       rows = data['rows'][0]['lessons']
       # print(rows)
       # return 0
-      with open(diir+"\\практика\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
+      with open(diirloc+"\\практика\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
       # считываем строчки из файла
         try:
           lines = file.readlines()
@@ -253,7 +221,8 @@ def saveThemesPracticy(diir,ch31):
             print()
         # input()
 
-def saveThemesTeory(diir,ch31):
+def saveThemesTeory(ch31):
+  diirloc = diir
 
   if ch31 == -1:
     spisok_close = spisok
@@ -284,7 +253,7 @@ def saveThemesTeory(diir,ch31):
     data = response.json()
     rows = data['rows'][0]['lessons']
     
-    with open(diir+"\\лекции\\rasp_"+name['group']+'.txt', encoding="utf-8") as file:
+    with open(diirloc+"\\лекции\\rasp_"+name['group']+'.txt', encoding="utf-8") as file:
       # считываем строчки из файла
       try:
         lines = file.readlines()
@@ -298,7 +267,7 @@ def saveThemesTeory(diir,ch31):
                 "student_id": name['student_id'],
                 "unit_id": "22",
                 "period_id": "30",
-                "date_from": "2022-09-01T00:00:00",
+                "date_from":"2023-01-01T00:00:00",
                 "date_to": dates,
                 "practical": "",
                 "slave_mode": "1",
@@ -362,7 +331,9 @@ def examinationRows(ch4:int):
       # input()
 
 
-def closeTheory(diir,ch51:int):
+def closeTheory(ch51:int):
+  diirloc = diir
+
   spisok_close = ""
   if ch51 == -1:
     spisok_close = spisok
@@ -375,7 +346,7 @@ def closeTheory(diir,ch51:int):
     data = response.json()
     rows = data['rows'][0]['lessons']
 
-    with open(diir+"\\лекции\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
+    with open(diirloc+"\\лекции\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
     # считываем строчки из файла
       try:
         lines = file.readlines()
@@ -389,7 +360,7 @@ def closeTheory(diir,ch51:int):
                 "student_id": el['student_id'],
                 "unit_id": "22",
                 "period_id": "30",
-                "date_from": "2022-09-01T00:00:00",
+                "date_from":"2023-01-01T00:00:00",
                 "date_to": dates,
                 "practical": "",
                 "slave_mode": "1",
@@ -420,7 +391,9 @@ def closeTheory(diir,ch51:int):
           print()
 
 
-def closePractic(diir, ch51: int):
+def closePractic( ch51: int):
+  diirloc = diir
+
   spisok_close = ""
   if ch51 == -1:
     spisok_close = spisok_practicy
@@ -438,7 +411,7 @@ def closePractic(diir, ch51: int):
     data = response.json()
     rows = data['rows'][0]['lessons']
 
-    with open(diir+"\\практика\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
+    with open(diirloc+"\\практика\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
       # считываем строчки из файла
       try:
           lines = file.readlines()
@@ -453,7 +426,7 @@ def closePractic(diir, ch51: int):
               "practical": "1",
               "unit_id": "22",
               "period_id": "30",
-              "date_from": "2022-09-01T00:00:00",
+              "date_from":"2023-01-01T00:00:00",
               "date_to": dates,
               "slave_mode": "1",
               "month": "",
@@ -490,7 +463,8 @@ def closePractic(diir, ch51: int):
       print()
 
 
-def openTheory(diir, ch61: int):
+def openTheory( ch61: int):
+  diirloc = diir
   spisok_close = ""
   if ch61 == -1:
     spisok_close = spisok
@@ -503,7 +477,7 @@ def openTheory(diir, ch61: int):
     data = response.json()
     rows = data['rows'][0]['lessons']
 
-    with open(diir+"\\лекции\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
+    with open(diirloc+"\\лекции\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
     # считываем строчки из файла
       try:
         lines = file.readlines()
@@ -517,7 +491,7 @@ def openTheory(diir, ch61: int):
                 "student_id": el['student_id'],
                 "unit_id": "22",
                 "period_id": "30",
-                "date_from": "2022-09-01T00:00:00",
+                "date_from":"2023-01-01T00:00:00",
                 "date_to": dates,
                 "practical": "",
                 "slave_mode": "1",
@@ -546,7 +520,8 @@ def openTheory(diir, ch61: int):
           print()
 
 
-def openPractic(diir, ch61: int):
+def openPractic( ch61: int):
+  diirloc = diir
   spisok_close = ""
   if ch61 == -1:
     spisok_close = spisok_practicy
@@ -564,7 +539,7 @@ def openPractic(diir, ch61: int):
     data = response.json()
     rows = data['rows'][0]['lessons']
 
-    with open(diir+"\\практика\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
+    with open(diirloc+"\\практика\\rasp_"+el['group']+'.txt', encoding="utf-8") as file:
       # считываем строчки из файла
       try:
           lines = file.readlines()
@@ -579,7 +554,7 @@ def openPractic(diir, ch61: int):
               "practical": "1",
               "unit_id": "22",
               "period_id": "30",
-              "date_from": "2022-09-01T00:00:00",
+              "date_from":"2023-01-01T00:00:00",
               "date_to": dates,
               "slave_mode": "1",
               "month": "",

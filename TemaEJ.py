@@ -17,34 +17,33 @@ while True:
   print("6. Открыть занятие")
 
   choice = int(input(''))
-  diir = "D:\\Desktop\\Desktop\\Пары\\2022-2023\\_журнал\\txt"
+  # diir = "D:\\Desktop\\Desktop\\Пары\\2022-2023\\_журнал\\txt"
   # input('Какя директория: ')
 
 
   if choice==1:
-    ch1 = int(input('Все? - 1\Нет - 0: '))
-    # print(diir)
-    if(ch1==1):
-      f.createFile(diir)
-    else:
-      print(f.spisok)
-      print('пока не сделано')
-      # ch2 = int(input('Какой индекс:  '))
+    ch1 = int(input('Теория - 1\Практика - 0: '))
+    f.createFile(ch1)
+    # if(ch1==0):
+    # elif(ch1==1):
+    #   f.createFile(ch1)
+    # else:
+      # print('пока не сделано')
 
   elif choice==2:
     ch2 = int(input('Теория - 1\\ Практика - 2: '))
     ch21 = int(input('Все -1. Или конкретно id:  '))
     print(f.spisok)
-    f.dubleFileAll(diir,ch2,ch21)
+    f.dubleFileAll(ch2,ch21)
 
   elif choice==3:
     ch3 = int(input('Теория - 1\\ Практика - 2: '))
     ch31 = int(input('Все -1. Или конкретно id:  '))
 
     if ch3 ==1:
-      f.saveThemesTeory(diir,ch31)
+      f.saveThemesTeory(ch31)
     elif ch3==2:
-      f.saveThemesPracticy(diir,ch31)
+      f.saveThemesPracticy(ch31)
     else:
       print('NO')
       # return 
@@ -59,9 +58,9 @@ while True:
     ch51 = int(input('Все -1. Или конкретно id:  '))
 
     if ch5 == 1:
-      f.closeTheory(diir,ch51)
+      f.closeTheory(ch51)
     elif ch5 == 2:
-      f.closePractic(diir,ch51)
+      f.closePractic(ch51)
     else:
       print('Попробуй ещё')
 
@@ -71,9 +70,9 @@ while True:
     ch61 = int(input('Все -1. Или конкретно id:  '))
 
     if ch6 == 1:
-      f.openTheory(diir,ch61)
+      f.openTheory(ch61)
     elif ch6 == 2:
-      f.openPractic(diir,ch61)
+      f.openPractic(ch61)
     else:
       print('Попробуй ещё')
 
