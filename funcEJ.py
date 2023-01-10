@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-import spisok_students as s
+import spisok_student as s
 
 
 dates = os.getenv('DATES')
