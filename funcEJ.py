@@ -7,6 +7,7 @@ load_dotenv()
 import spisok_student as s
 
 
+dates_from = os.getenv('DATES_FROM')
 dates = os.getenv('DATES')
 cookie = os.getenv('COOKIE')
 diir = os.getenv('DIIR')
@@ -35,7 +36,7 @@ def payload_rows_teory(dates,group_id,subject_id):
   payload = {
     "unit_id": 22,
     "period_id":	30,
-    "date_from":	"2022-09-01T00:00:00",
+    "date_from":dates_from,
     "date_to":	dates,
     "practical":	"",
     "slave_mode":	"1",
@@ -54,7 +55,7 @@ def payload_rows_practicy(dates,group_id,subject_id,sub_group_id):
   payload = {
     "unit_id": 22,
     "period_id":	30,
-    "date_from":	"2022-09-01T00:00:00",
+    "date_from":dates_from,
     "date_to":	dates,
     "practical":	"1",
     "slave_mode":	"1",
@@ -79,7 +80,7 @@ def payload_rows_practicy_save_tema(les_id,student_id,dates,group_id,subject_id,
               "student_id": student_id,
               "unit_id": "22",
               "period_id": "30",
-              "date_from":"2023-01-01T00:00:00",
+              "date_from":dates_from,
               "date_to": dates,
               "practical": "1",
               "slave_mode": "1",
@@ -233,7 +234,7 @@ def saveThemesTeory(ch31):
     payload_tab_rows = {
       "unit_id": 22,
       "period_id":	30,
-      "date_from":	"2022-09-01T00:00:00",
+      "date_from":dates_from,
       "date_to":	dates,
       "practical":	"",
       "slave_mode":	"",
@@ -267,7 +268,7 @@ def saveThemesTeory(ch31):
                 "student_id": name['student_id'],
                 "unit_id": "22",
                 "period_id": "30",
-                "date_from":"2023-01-01T00:00:00",
+                "date_from":dates_from,
                 "date_to": dates,
                 "practical": "",
                 "slave_mode": "1",
@@ -360,7 +361,7 @@ def closeTheory(ch51:int):
                 "student_id": el['student_id'],
                 "unit_id": "22",
                 "period_id": "30",
-                "date_from":"2023-01-01T00:00:00",
+                "date_from": dates_from,
                 "date_to": dates,
                 "practical": "",
                 "slave_mode": "1",
@@ -426,7 +427,7 @@ def closePractic( ch51: int):
               "practical": "1",
               "unit_id": "22",
               "period_id": "30",
-              "date_from":"2023-01-01T00:00:00",
+              "date_from":dates_from,
               "date_to": dates,
               "slave_mode": "1",
               "month": "",
@@ -491,7 +492,7 @@ def openTheory( ch61: int):
                 "student_id": el['student_id'],
                 "unit_id": "22",
                 "period_id": "30",
-                "date_from":"2023-01-01T00:00:00",
+                "date_from":dates_from,
                 "date_to": dates,
                 "practical": "",
                 "slave_mode": "1",
@@ -554,7 +555,7 @@ def openPractic( ch61: int):
               "practical": "1",
               "unit_id": "22",
               "period_id": "30",
-              "date_from":"2023-01-01T00:00:00",
+              "date_from":dates_from,
               "date_to": dates,
               "slave_mode": "1",
               "month": "",
