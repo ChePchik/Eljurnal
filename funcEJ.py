@@ -102,12 +102,17 @@ def payload_rows_practicy_save_tema(les_id,student_id,dates,group_id,subject_id,
 
 def createFile(ch1):
   diirloc = diir
+  spisok0 = ''
+
   if(ch1==0):
     diirloc = diirloc+'\\лекции'
+    spisok0 = spisok
   elif(ch1==1):
     diirloc = diirloc+'\\практика'
+    spisok0 = spisok_practicy
 
-  for name in spisok:
+
+  for name in spisok0:
     try:
       with open(diirloc+"\\"+name['group']+'.txt','w',encoding="utf-8") as file2:
         print(name['group'])
