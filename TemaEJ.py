@@ -11,10 +11,12 @@ while True:
 
   print("1. Создать файлики")
   print("2. Продублировать темы в файлах")
+  print("3. Создать файл (пока теория)")
   print("3. Выставить темы")
   print("4. Проверить столбцы")
   print("5. Закрыть занятие")
   print("6. Открыть занятие")
+  print("7. Тест")
 
   choice = int(input(''))
   # diir = "D:\\Desktop\\Desktop\\Пары\\2022-2023\\_журнал\\txt"
@@ -22,13 +24,8 @@ while True:
 
 
   if choice==1:
-    ch1 = int(input('Теория - 1\Практика - 0: '))
+    ch1 = int(input('Теория - 1\Практика - 2: '))
     f.createFile(ch1)
-    # if(ch1==0):
-    # elif(ch1==1):
-    #   f.createFile(ch1)
-    # else:
-      # print('пока не сделано')
 
   elif choice==2:
     ch2 = int(input('Теория - 1\\ Практика - 2: '))
@@ -37,32 +34,25 @@ while True:
     f.dubleFileAll(ch2,ch21)
 
   elif choice==3:
-    ch3 = int(input('Теория - 1\\ Практика - 2: '))
-    ch31 = int(input('Все -1. Или конкретно id:  '))
+    f.create_spisok_student()
 
-    if ch3 ==1:
-      f.saveThemesTeory(ch31)
-    elif ch3==2:
-      f.saveThemesPracticy(ch31)
+  elif choice==4:
+    ch4 = int(input('Теория - 1\\ Практика - 2: '))
+    ch41 = int(input('Все -1. Или конкретно id:  '))
+
+    if ch4 ==1:
+      f.saveThemesTeory(ch41)
+    elif ch4==2:
+      f.saveThemesPracticy(ch41)
     else:
       print('NO')
       # return 
 
-  elif choice==4:
-    print('Будут проврены все столбцы, если даты есть всё правильно')
-    ch4 = int(input('Теория - 1\\ Практика - 2: '))
-    f.examinationRows(ch4)
-
   elif choice==5:
+    print('Будут проврены все столбцы, если даты есть всё правильно')
     ch5 = int(input('Теория - 1\\ Практика - 2: '))
-    ch51 = int(input('Все -1. Или конкретно id:  '))
+    f.examinationRows(ch5)
 
-    if ch5 == 1:
-      f.closeTheory(ch51)
-    elif ch5 == 2:
-      f.closePractic(ch51)
-    else:
-      print('Попробуй ещё')
 
 
   elif choice==6:
@@ -70,13 +60,23 @@ while True:
     ch61 = int(input('Все -1. Или конкретно id:  '))
 
     if ch6 == 1:
-      f.openTheory(ch61)
+      f.closeTheory(ch61)
     elif ch6 == 2:
-      f.openPractic(ch61)
+      f.closePractic(ch61)
     else:
       print('Попробуй ещё')
+      
 
+  elif choice==7:
+    ch7 = int(input('Теория - 1\\ Практика - 2: '))
+    ch71 = int(input('Все -1. Или конкретно id:  '))
 
+    if ch7 == 1:
+      f.openTheory(ch71)
+    elif ch7 == 2:
+      f.openPractic(ch71)
+    else:
+      print('Попробуй ещё')
 
   else:
     print('Такого выбора нет')

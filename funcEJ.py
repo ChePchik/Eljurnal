@@ -1,5 +1,6 @@
 import re 
 import requests
+import json
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -16,6 +17,10 @@ url_tab_rows = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_t
 url_save = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_work_lesson_subject"
 url_close = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action"
 url_open = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_open_lesson_action"
+url_tab_group = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_group_rows"
+# получаем группы
+url_tab_subject = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_subject_rows"
+url_tab_stident = 'https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_rows'
 name = ''
 les_id = 0
 
@@ -100,14 +105,29 @@ def payload_rows_practicy_save_tema(les_id,student_id,dates,group_id,subject_id,
     payload["subject_sub_group_obj"] = "{\"subject_id\": "+subject_id+", \"sub_group_id\": "+sub_group_id+"}"
   return payload
 
+def create_spisok_student_payload():
+  # для получения списка групп
+  payload = {
+    'slave_mode': '1',
+    'empty_item': '1',
+    'practical': '',
+    'unit_id': '22',
+    'period_id': '30',
+    'date_from': dates_from,
+    'date_to': dates,
+    'month': '',
+    'filter': '',
+  }
+  return payload
+
 def createFile(ch1):
   diirloc = diir
   spisok0 = ''
 
-  if(ch1==0):
+  if(ch1==1):
     diirloc = diirloc+'\\лекции'
     spisok0 = spisok
-  elif(ch1==1):
+  elif(ch1==2):
     diirloc = diirloc+'\\практика'
     spisok0 = spisok_practicy
 
@@ -595,3 +615,123 @@ def openPractic( ch61: int):
       finally:
         file.close()
       print()
+
+def create_spisok_theory(groups):
+  result = []
+  ids = 0
+  data = []
+  for g in groups['rows']:
+
+      payload_preedmet = {
+          'start': '0',
+          'limit': '50',
+          'practical': '',
+          'unit_id': '22',
+          'period_id': '30',
+          'date_from': dates_from,
+          'date_to': dates,
+          'slave_mode': '1',
+          'm3_window_id': 'cmp_fdd8d53e',
+          'filter': '',
+          'group_id': g['id'],
+      }
+
+      response_predmet = requests.post(
+          url_tab_subject, headers=headers, data=payload_preedmet)
+      premdet = response_predmet.json()
+
+      # получение предметов у группы
+      # print(t)
+      # print()
+      data.append(premdet)
+
+      print(premdet['rows'])
+      print()
+      # print(groups['rows'])
+      # input()
+
+  for x, i in enumerate(groups['rows']):
+      if data[x]['rows']:
+          w = x if x % 2 == 1 else x + 1
+          for z in range(len(data[w]['rows'])):
+              # print(data)
+              # print()
+              print(i)
+              # print()
+              obj = json.loads(data[w]['rows'][z]['id'])['subject_id']
+
+              payload_student = {
+                  'unit_id': '22',
+                  'period_id': '30',
+                  'date_from': dates_from,
+                  'date_to': dates,
+                  'practical': '',
+                  'slave_mode': '1',
+                  'month': '',
+                  'group_id': i['id'],
+                  'subject': '0',
+                  'subject_gen_pr_id': '0',
+                  'exam_subject_id': '0',
+                  'subject_sub_group_obj': '{"subject_id": ' + str(obj) + '}',
+                  'subject_id': str(obj)
+              }
+
+              student_response = requests.post(url_tab_stident, headers=headers,
+                                                data=payload_student)
+
+              student_id = student_response.json()['rows'][0]['student_id']
+
+              temp_res = {
+                  "group": data[w]['rows'][z]['name'] + ' ' + i['name'][:i['name'].index(' ')],
+                  "student_id": student_id,
+                  "group_id": i['id'],
+                  "subject_id": data[w]['rows'][z]['id'][15:-1],
+                  "id": ids
+              }
+              print(temp_res)
+              result.append(temp_res)
+
+              ids += 1
+              # input()
+          # print(len(data[w]['rows']))
+          # for i in data[w]['rows']:
+          #   print(i)
+  return result
+
+
+def create_spisok_student():
+  payload = create_spisok_student_payload()
+  response = requests.post(url_tab_group, headers=headers, data=payload)
+    
+  data = response.json()
+  # получение групп
+  # print(data)
+
+  spth = create_spisok_theory(data)
+  # print(spth)
+  with open('spisok_student.py', 'w', encoding='utf-8') as file:
+    try:
+      file.write('spisok = [\n')
+      for i in spth:
+          file.write('\t')
+          file.write(str(i))
+          file.write(',\n')
+      file.write(']\n\n')
+      
+      spth2 = []
+      # create_spisok_practicy(data)
+      file.write('spisok_practicy = [\n')
+      for i in spth2:
+          file.write('\t')
+      #     file.write(str(i))
+          file.write(',\n')
+      file.write(']')
+
+    except Exception as e:
+      print(e)
+
+    finally:
+      file.close()
+    print()
+
+
