@@ -1,7 +1,4 @@
-# import re 
-# import os
 import funcEJ as f
-# clear = lambda: os.system('cls')
 
 while True:
   print('-----------------------------------')
@@ -13,7 +10,7 @@ while True:
   print("0. Авторизоваться")
   print("1. Создать файлики")
   print("2. Продублировать темы в файлах")
-  print("3. Создать файл (пока теория)")
+  print("3. Создать файл spisok_students (пока теория)")
   print("4. Выставить темы")
   print("5. Проверить столбцы")
   print("6. Закрыть занятие")
@@ -38,7 +35,8 @@ while True:
     f.dubleFileAll(ch2,ch21)
 
   elif choice==3:
-    f.create_spisok_student()
+    ch3 = 1	#int(input('Теория - 1\Практика - 2: '))
+    f.create_spisok_student(ch3)
 
   elif choice==4:
     ch4 = int(input('Теория - 1\\ Практика - 2: '))

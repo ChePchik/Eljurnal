@@ -46,28 +46,21 @@ headers = {
     'Cookie': cookie
 }
 
-
-def auth():
-    login = input('Введите логин: ')
-    password = input('Введите логин: ')
-
-    payload_login = {
-        'login_login': login,
-        'login_password':	password
-    }
-
-    response = requests.post(
-        url_login, headers=headers_login, data=payload_login)
-    # data = response.json()
-    print(response.status_code)
-    if response.status_code == 200:
-        print('ssuz_sessionid=' +
-              response.headers['Set-Cookie'].split(';')[0].split('=')[1])
-        cookie = 'ssuz_sessionid=' + \
-            response.headers['Set-Cookie'].split(';')[0].split('=')[1]
+#!#####################################################################################
+def payload_predmet_teory( group_id):
+	payload = {
+		   'unit_id': '22',
+            'period_id': '30',
+            'date_from': dates_from,
+            'date_to': dates,
+            'practical': '',
+            'slave_mode': '1',
+            'group_id': group_id,
+	}
+	return payload
 
 
-def payload_rows_teory(dates, group_id, subject_id):
+def payload_rows_teory(group_id, subject_id):
     payload = {
         "unit_id": 22,
         "period_id":	30,
@@ -80,9 +73,9 @@ def payload_rows_teory(dates, group_id, subject_id):
         "subject":	"0",
         "subject_gen_pr_id":	"0",
         "exam_subject_id":	"0",
-        "subject_sub_group_obj":	"{\"subject_id\": "+subject_id+"}",
-        "subject_id":	subject_id,
-        "view_lessons":	"false"
+        "subject_sub_group_obj":	"{\"subject_id\": "+str(subject_id)+"}",
+        "subject_id":	str(subject_id),
+        # "view_lessons":	"false"
     }
     return payload
 
@@ -166,6 +159,26 @@ def payload_practicy_get_groups():
     }
     return payload
 
+#!#####################################################################################
+
+def auth():
+    login = input('Введите логин: ')
+    password = input('Введите логин: ')
+
+    payload_login = {
+        'login_login': login,
+        'login_password':	password
+    }
+
+    response = requests.post(
+        url_login, headers=headers_login, data=payload_login)
+    # data = response.json()
+    print(response.status_code)
+    if response.status_code == 200:
+        print('ssuz_sessionid=' +
+              response.headers['Set-Cookie'].split(';')[0].split('=')[1])
+        cookie = 'ssuz_sessionid=' + \
+            response.headers['Set-Cookie'].split(';')[0].split('=')[1]
 
 def createFile(ch1):
     diirloc = diir
@@ -377,10 +390,8 @@ def examinationRows(ch4: int):
 
     if ch4 == 1:
         for el in spisok:
-            payload = payload_rows_teory(
-                dates, el["group_id"], el["subject_id"])
-            response = requests.post(
-                url_tab_rows, headers=headers, data=payload)
+            payload = payload_rows_teory(el["group_id"], el["subject_id"])
+            response = requests.post(url_tab_rows, headers=headers, data=payload)
 
             data = response.json()
             print(data['rows'][0]['student_name'], el['group'])
@@ -677,72 +688,51 @@ def openPractic(ch61: int):
 
 
 def create_spisok_theory(groups):
-    result = []
-    ids = 0
-    predmets = []
-    for g in groups['rows']:
+	result = []
+	ids = 0
+	predmets = []
+	print(groups)
+	for g in groups['rows']:
+		# print(g)
 
-        payload_preedmet = {
-            'unit_id': '22',
-            'period_id': '30',
-            'date_from': dates_from,
-            'date_to': dates,
-            'practical': '',
-            'slave_mode': '1',
-            'group_id': g['id'],
-        }
+		payload_preedmet = payload_predmet_teory(g['id'])
+		
+		response_predmet = requests.post(url_tab_subject, headers=headers, data=payload_preedmet)
+		data_premdet = response_predmet.json()
+		# print('data_premdet', data_premdet)
+		# input()
 
-        response_predmet = requests.post(
-            url_tab_subject, headers=headers, data=payload_preedmet)
-        data_premdet = response_predmet.json()
-        print('data_premdet', data_premdet)
-        # input()
-
-        for i, el in enumerate(data_premdet['rows']):
-            if 'sub_group_id' not in el['id']:
-                predmets.append(el)
+		for i, el in enumerate(data_premdet['rows']):
+			if 'sub_group_id' not in el['id']:
+				predmets.append(el)
                 # что бы отсечь практические группы
 
-                obj = json.loads(el['id'])['subject_id']
+				obj = json.loads(el['id'])['subject_id']
                 # obj = json.loads(predmets[w][z]['id'])['subject_id']
                 # print(g)
-                payload_students = {
-                    'unit_id': '22',
-                    'period_id': '30',
-                    'date_from': dates_from,
-                    'date_to': dates,
-                    'practical': '',
-                    'slave_mode': '1',
-                    'month': '',
-                    'group_id': g['id'],
-                    'subject': '0',
-                    'subject_gen_pr_id': '0',
-                    'exam_subject_id': '0',
-                    'subject_sub_group_obj': '{"subject_id": ' + str(obj) + '}',
-                    'subject_id': str(obj)
-                }
-                # print(payload_students)
-                # input()
-            # print()
+				payload_students = payload_rows_teory(g['id'],str(obj))
 
-                student_response = requests.post(url_tab_stident, headers=headers,
-                                                 data=payload_students)
+				student_response = requests.post(url_tab_stident, headers=headers,data=payload_students)
+				student_id = student_response.json()['rows'][0]['student_id']
+				# print(g)
+				# print(el)
+				# input()
 
-                student_id = student_response.json()['rows'][0]['student_id']
-                print(g)
-                print(el)
-                input()
-
-                temp_res = {
-                    "group": g['name'][:s.index(' ')] + el['name'],
+				temp_res = {
+                    "group": g['name'].split(' - ')[0] +' '+ el['name'],
                     "student_id": student_id,
                     "group_id": g['id'],
                     "subject_id": obj,
                     "id": ids
                 }
-                print(temp_res)
-                input('result: ')
-                result.append(temp_res)
+				ids +=1
+				print(temp_res)
+				# input('result: ')
+				result.append(temp_res)
+	return result
+
+
+# #########################
 
     # print('predmets')
     # print(predmets)
@@ -803,31 +793,35 @@ def create_spisok_theory(groups):
                 # print(len(data[w]['rows']))
                 # for i in data[w]['rows']:
                 #   print(i)
-    return result
+		# return result
 
 
-def create_spisok_student():
-    payload = payload_theory_get_groups()
-    response = requests.post(url_tab_group, headers=headers, data=payload)
+def create_spisok_student(ch3):
 
-    groups = response.json()
-    print('groups')
-    print(groups)
-    input()
+    # if (ch1 == 1):
+    #     diirloc = diirloc+'\\лекции'
+    #     spisok0 = spisok
+    # elif (ch1 == 2):
+    #     diirloc = diirloc+'\\практика'
+    #     spisok0 = spisok_practicy
 
-    # получение групп
-    # print(data)
+	payload = payload_theory_get_groups()
+	response = requests.post(url_tab_group, headers=headers, data=payload)
+	groups = response.json()
 
-    spth = create_spisok_theory(groups)
+	spth = create_spisok_theory(groups)
+	# return 0
     # print(spth)
-    # with open('spisok_student.py', 'w', encoding='utf-8') as file:
-    #   try:
-    #     file.write('spisok = [\n')
-    #     for i in spth:
-    #         file.write('\t')
-    #         file.write(str(i))
-    #         file.write(',\n')
-    #     file.write(']\n\n')
+	with open('spisok_student.py', 'w', encoding='utf-8') as file:
+		try:
+			file.write('spisok = [\n')
+			for i in spth:
+				file.write('\t')
+				file.write(str(i))
+				file.write(',\n')
+			file.write(']\n\n')
+			file.write('spisok_practicy = []')
+
 
     # spth2 = []
     # # create_spisok_practicy(data)
@@ -838,9 +832,9 @@ def create_spisok_student():
     #     file.write(',\n')
     # file.write(']')
 
-    # except Exception as e:
-    #   print(e)
+		except Exception as e:
+			print(e)
 
-    # finally:
-    #   file.close()
-    # print()
+		finally:
+			file.close()
+	print()
