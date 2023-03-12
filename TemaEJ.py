@@ -7,7 +7,6 @@ while True:
   print("что будем делать")
 
 
-  print("0. Авторизоваться")
   print("1. Создать файлики")
   print("2. Продублировать темы в файлах")
   print("3. Создать файл spisok_students (пока теория)")
@@ -20,9 +19,6 @@ while True:
   # diir = "D:\\Desktop\\Desktop\\Пары\\2022-2023\\_журнал\\txt"
   # input('Какя директория: ')
 
-
-  if choice==0:
-    f.auth()
 
   if choice==1:
     ch1 = int(input('Теория - 1\Практика - 2: '))

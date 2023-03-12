@@ -12,7 +12,6 @@ dates = os.getenv('DATES')
 cookie = os.getenv('COOKIE')
 diir = os.getenv('DIIR')
 
-url_login = "https://ssuz.vip.edu35.ru/auth/login"
 url_tab_rows = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_rows"
 url_save = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_save_work_lesson_subject"
 url_close = "https://ssuz.vip.edu35.ru/actions/register/lessons_tab/lessons_tab_close_lesson_action"
@@ -26,15 +25,6 @@ les_id = 0
 
 spisok = s.spisok
 spisok_practicy = s.spisok_practicy
-
-headers_login = {
-    'Host': 'ssuz.vip.edu35.ru',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0',
-    'Accept': '*/*',
-    'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-}
 
 headers = {
     'Host': 'ssuz.vip.edu35.ru',
@@ -160,25 +150,6 @@ def payload_practicy_get_groups():
     return payload
 
 #!#####################################################################################
-
-def auth():
-    login = input('Введите логин: ')
-    password = input('Введите логин: ')
-
-    payload_login = {
-        'login_login': login,
-        'login_password':	password
-    }
-
-    response = requests.post(
-        url_login, headers=headers_login, data=payload_login)
-    # data = response.json()
-    print(response.status_code)
-    if response.status_code == 200:
-        print('ssuz_sessionid=' +
-              response.headers['Set-Cookie'].split(';')[0].split('=')[1])
-        cookie = 'ssuz_sessionid=' + \
-            response.headers['Set-Cookie'].split(';')[0].split('=')[1]
 
 def createFile(ch1):
     diirloc = diir
