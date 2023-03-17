@@ -31,8 +31,8 @@ while True:
     f.dubleFileAll(ch2,ch21)
 
   elif choice==3:
-    ch3 = 1	#int(input('Теория - 1\Практика - 2: '))
-    f.create_spisok_student(ch3)
+    # ch3 = 1	#int(input('Теория - 1\Практика - 2: '))
+    f.create_spisok_student()
 
   elif choice==4:
     ch4 = int(input('Теория - 1\\ Практика - 2: '))

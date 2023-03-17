@@ -40,12 +40,24 @@ headers = {
 def payload_predmet_teory( group_id):
 	payload = {
 		   'unit_id': '22',
-            'period_id': '30',
-            'date_from': dates_from,
-            'date_to': dates,
-            'practical': '',
-            'slave_mode': '1',
-            'group_id': group_id,
+        'period_id': '30',
+        'date_from': dates_from,
+        'date_to': dates,
+        'practical': '',
+        'slave_mode': '1',
+        'group_id': group_id,
+	}
+	return payload
+
+def payload_predmet_practicy( group_id):
+	payload = {
+		   'unit_id': '22',
+        'period_id': '30',
+        'date_from': dates_from,
+        'date_to': dates,
+        'practical': '1',
+        'slave_mode': '1',
+        'group_id': group_id,
 	}
 	return payload
 
@@ -177,15 +189,20 @@ def dubleFileAll(ch2, ch21):
 
     if ch2 == 1:
         diirloc = diirloc+'\\лекции'
-        spisok1 = [spisok[ch21]]
+        if ch21 == -1:
+          spisok1 = spisok
+        else:
+          spisok1 = [spisok[ch21]]
 
     elif ch2 == 2:
         diirloc = diirloc+'\\практика'
-        spisok1 = [spisok_practicy[ch21]]
+        if ch21 == -1:
+          spisok1 = spisok_practicy
+        else:
+          spisok1 = [spisok_practicy[ch21]]
 
     else:
         print('Такого действия нет')
-    spisok1 = spisok
 
     for name in spisok1:
         data_list = []
@@ -231,11 +248,20 @@ def saveThemesPracticy(ch31):
         spisok_close = [spisok_practicy[ch31]]
 
     for el in spisok_close:
-        payload = payload_rows_practicy(
+      
+        if 'sub_group_id' not in el:
+
+            payload = payload_rows_practicy(
+              dates, el["group_id"],
+              el["subject_id"],
+              0
+            )
+        else:
+            payload = payload_rows_practicy(
             dates, el["group_id"],
             el["subject_id"],
-            0 if (el['id']+1) % 3 == 0 else el["sub_group_id"]
-        )
+            el["sub_group_id"]
+            )
 
         response = requests.post(url_tab_rows, headers=headers, data=payload)
 
@@ -254,13 +280,23 @@ def saveThemesPracticy(ch31):
                     # print(name)
                     les_id = rows[i]['id']
                     # print(les_id,name)
-                    payload_save = payload_rows_practicy_save_tema(
-                        les_id, el['student_id'],
-                        dates, el['group_id'],
-                        el['subject_id'],
-                        0 if (el['id']+1) % 3 == 0 else el["sub_group_id"],
-                        name_lessons
-                    )
+                    if 'sub_group_id' not in el:
+
+                      payload_save = payload_rows_practicy_save_tema(
+                          les_id, el['student_id'],
+                          dates, el['group_id'],
+                          el['subject_id'],
+                          0,
+                          name_lessons
+                      )
+                    else:
+                      payload_save = payload_rows_practicy_save_tema(
+                          les_id, el['student_id'],
+                          dates, el['group_id'],
+                          el['subject_id'],
+                          el["sub_group_id"],
+                          name_lessons
+                      )
 
                     # print(payload_save)
                     response = requests.post(
@@ -373,12 +409,22 @@ def examinationRows(ch4: int):
             # input()
     else:
         for el in spisok_practicy:
+          if 'sub_group_id' not in el:
+
             payload = payload_rows_practicy(
                 dates,
                 el["group_id"],
                 el["subject_id"],
-                0 if (el['id']+1) % 3 == 0 else el["sub_group_id"]
+                0 
             )
+          else:
+            payload = payload_rows_practicy(
+                dates,
+                el["group_id"],
+                el["subject_id"],
+                el["sub_group_id"]
+            )
+
 
             response = requests.post(
                 url_tab_rows, headers=headers, data=payload)
@@ -463,11 +509,20 @@ def closePractic(ch51: int):
         spisok_close = [spisok_practicy[ch51]]
 
     for el in spisok_close:
-        payload = payload_rows_practicy(
-            dates, el["group_id"],
-            el["subject_id"],
-            0 if (el['id']+1) % 3 == 0 else el["sub_group_id"]
-        )
+        if 'sub_group_id' not in el:
+
+          payload = payload_rows_practicy(
+              dates, el["group_id"],
+              el["subject_id"],
+              0
+          )
+        else:
+          payload = payload_rows_practicy(
+              dates, el["group_id"],
+              el["subject_id"],
+              el["sub_group_id"]
+          )
+
         response = requests.post(url_tab_rows, headers=headers, data=payload)
 
         data = response.json()
@@ -502,7 +557,8 @@ def closePractic(ch51: int):
                         "subperiod": "399",
                         "mark": ""
                     }
-                    if (el['id']+1) % 3 == 0:
+                    if 'sub_group_id' not in el:
+                    
                         payload["subject_sub_group_obj"] = "{\"subject_id\": " + \
                             el['subject_id']+"}"
                     else:
@@ -516,9 +572,6 @@ def closePractic(ch51: int):
                     print(el['group'])
                     print(i, response.status_code, data)
 
-                    # print(lines[i], rows[i]['id'])
-                #   text =i.rstrip()
-                #   print(text)
             except Exception as e:
                 print(e)
 
@@ -594,11 +647,19 @@ def openPractic(ch61: int):
         spisok_close = [spisok_practicy[ch61]]
 
     for el in spisok_close:
-        payload = payload_rows_practicy(
-            dates, el["group_id"],
-            el["subject_id"],
-            0 if (el['id']+1) % 3 == 0 else el["sub_group_id"]
-        )
+        if 'sub_group_id' not in el:
+          payload = payload_rows_practicy(
+              dates, el["group_id"],
+              el["subject_id"],
+              0
+          )
+        else:
+          payload = payload_rows_practicy(
+              dates, el["group_id"],
+              el["subject_id"],
+              el["sub_group_id"]
+          )
+
         response = requests.post(url_tab_rows, headers=headers, data=payload)
 
         data = response.json()
@@ -633,7 +694,8 @@ def openPractic(ch61: int):
                         "subperiod": "399",
                         "mark": ""
                     }
-                    if (el['id']+1) % 3 == 0:
+                    if 'sub_group_id' not in el:
+                    
                         payload["subject_sub_group_obj"] = "{\"subject_id\": " + \
                             el['subject_id']+"}"
                     else:
@@ -691,9 +753,9 @@ def create_spisok_theory(groups):
 
 				temp_res = {
                     "group": g['name'].split(' - ')[0] +' '+ el['name'],
-                    "student_id": student_id,
-                    "group_id": g['id'],
-                    "subject_id": obj,
+                    "student_id": str(student_id),
+                    "group_id": str(g['id']),
+                    "subject_id": str(obj),
                     "id": ids
                 }
 				ids +=1
@@ -701,107 +763,130 @@ def create_spisok_theory(groups):
 				# input('result: ')
 				result.append(temp_res)
 	return result
+# TODO#####################################################
+def create_spisok_practicy(groups):
+  try:
+    result = []
+    ids = 0
+    predmets = []
+    temp_res = []
+    # print(groups)
+    for gr in groups['rows']:
+      match = re.search(r'\в', gr['name'].split(' - ')[0])
+      match = match[0] if match else False
+      # print(match)
+      # print()
+      
+      # определяем группа платников
+
+      payload_preedmet = payload_predmet_practicy(gr['id'])
+      
+      response_predmet = requests.post(url_tab_subject, headers=headers, data=payload_preedmet)
+      data_premdet = response_predmet.json()
+      # print(data_premdet)
+
+      if match=='в':
+        # платники
+        if data_premdet['total'] == 0:
+          print('null платники')
+        else:
+          for i,pr in enumerate(data_premdet['rows']):
+            obj = json.loads(pr['id'])
+
+            if 'sub_group_id' not in obj:
+
+              payload_students = payload_rows_practicy(dates,
+                                                        str(gr['id']),
+                                                        str(obj["subject_id"]),
+                                                        0
+                                                        )
+
+              student_response = requests.post(url_tab_stident, headers=headers,data=payload_students)
+              student_id = student_response.json()['rows'][0]['student_id']
+              print(pr)
+
+              predmet = pr['name'].replace('/','-')
+              temp_res = {
+                      # "group": gr['name'].split(' - ')[0] +' '+ pr['name'].replace(re.search('\((.*?)\)',pr[0]['name'])[0],'')+i%2,
+                      "group": gr['name'].split(' - ')[0] +' '+ predmet,
+                      "student_id": str(student_id),
+                      "group_id": str(gr['id']),
+                      "subject_id": str(obj["subject_id"]),
+                      "id": ids
+                  }
+              ids +=1
+              result.append(temp_res)
 
 
-# #########################
+      else:
+        # не платники
+        if data_premdet['total'] == 0:
+          print('null не платники')
+        else:
+          for i,pr in enumerate(data_premdet['rows']):
+            obj = json.loads(pr['id'])
 
-    # print('predmets')
-    # print(predmets)
-    # input()
+            if 'sub_group_id' in obj:
 
-    # for x, el_g in enumerate(groups['rows']):
-    #   # for y, el_p in enumerate(predmets):
-    #     # print(x,el_g,el_p)
-    #     w = x if x % 2 == 1 else x + 1
-    #     for z in range(len(predmets[w])):
-    #       print(z)
+              payload_students = payload_rows_practicy(dates,
+                                                        str(gr['id']),
+                                                        str(obj["subject_id"]),
+                                                        str(obj["sub_group_id"]))
 
-    # for x, i in enumerate(groups['rows']):
-            # print(x,i)
-        # if predmets[x]:
-            # w = x if x % 2 == 1 else x + 1
-            # for z in range(len(predmets[w])):
-            #   # print(data)
-            #   # print()
-            #   # print(i)
-            #   # print()
-            #   obj = json.loads(predmets[w][z]['id'])['subject_id']
-
-            #   payload_student = {
-            #     'unit_id': '22',
-            #     'period_id': '30',
-            #     'date_from': dates_from,
-            #     'date_to': dates,
-            #     'practical': '',
-            #     'slave_mode': '1',
-            #     'month': '',
-            #     'group_id': i['id'],
-            #     'subject': '0',
-            #     'subject_gen_pr_id': '0',
-            #     'exam_subject_id': '0',
-            #     'subject_sub_group_obj': '{"subject_id": ' + str(obj) + '}',
-            #     'subject_id': str(obj)
-            #   }
-
-            #   student_response = requests.post(url_tab_stident, headers=headers,
-            #                                     data=payload_student)
-
-            #   student_id = student_response.json()['rows'][0]['student_id']
-
-            #   temp_res = {
-            #     "group": predmets[w][z]['name'] + ' ' + i['name'][:i['name'].index(' ')],
-            #     "student_id": student_id,
-            #     "group_id": i['id'],
-            #     "subject_id": predmets[w][z]['id'][15:-1],
-            #     "id": ids
-            #   }
-            #   print(temp_res)
-            #   input('result: ')
-            #   result.append(temp_res)
-
-            #   ids += 1
-                # input()
-                # print(len(data[w]['rows']))
-                # for i in data[w]['rows']:
-                #   print(i)
-		# return result
+              student_response = requests.post(url_tab_stident, headers=headers,data=payload_students)
+              student_id = student_response.json()['rows'][0]['student_id']
+              print(pr)
+              predmet = pr['name'].replace('/','-')
+              temp_res = {
+                      # "group": gr['name'].split(' - ')[0] +' '+ pr['name'].replace(re.search('\((.*?)\)',pr[0]['name'])[0],'')+i%2,
+                      # эх жалко, такое выражение классное
+                      "group": gr['name'].split(' - ')[0] +' '+ predmet,
+                      "student_id": str(student_id),
+                      "group_id": str(gr['id']),
+                      "subject_id": str(obj["subject_id"]),
+                      'sub_group_id': str(obj["sub_group_id"]),
+                      "id": ids
+                  }
+              ids +=1
+              result.append(temp_res)
 
 
-def create_spisok_student(ch3):
+    return result
+  except Exception as e:
+    print(e)
+  except ValueError as ee:
+    print(ee)
+  
 
-    # if (ch1 == 1):
-    #     diirloc = diirloc+'\\лекции'
-    #     spisok0 = spisok
-    # elif (ch1 == 2):
-    #     diirloc = diirloc+'\\практика'
-    #     spisok0 = spisok_practicy
+def create_spisok_student():
 
-	payload = payload_theory_get_groups()
-	response = requests.post(url_tab_group, headers=headers, data=payload)
-	groups = response.json()
+	payload_t = payload_theory_get_groups()
+	response_t = requests.post(url_tab_group, headers=headers, data=payload_t)
+	groups_t = response_t.json()
 
-	spth = create_spisok_theory(groups)
-	# return 0
-    # print(spth)
+	payload_p = payload_practicy_get_groups()
+	response_p = requests.post(url_tab_group, headers=headers, data=payload_p)
+	groups_p = response_p.json()
+
+	spth = create_spisok_theory(groups_t)
+	spth2 = create_spisok_practicy(groups_p)
+
 	with open('spisok_student.py', 'w', encoding='utf-8') as file:
 		try:
+
 			file.write('spisok = [\n')
 			for i in spth:
 				file.write('\t')
 				file.write(str(i))
 				file.write(',\n')
 			file.write(']\n\n')
-			file.write('spisok_practicy = []')
 
-
-    # spth2 = []
-    # # create_spisok_practicy(data)
-    # file.write('spisok_practicy = [\n')
-    # for i in spth2:
-    #     file.write('\t')
-    # #     file.write(str(i))
-    #     file.write(',\n')
-    # file.write(']')
+			file.write('spisok_practicy = [\n')
+			for i in spth2:
+				file.write('\t')
+				file.write(str(i))
+				file.write(',\n')
+			file.write(']\n\n')
 
 		except Exception as e:
 			print(e)
