@@ -448,7 +448,7 @@ def closeTheory(ch51: int):
         spisok_close = [spisok[ch51]]
 
     for el in spisok_close:
-        payload = payload_rows_teory(dates, el["group_id"], el["subject_id"])
+        payload = payload_rows_teory(el["group_id"], el["subject_id"])
         response = requests.post(url_tab_rows, headers=headers, data=payload)
         data = response.json()
         rows = data['rows'][0]['lessons']
