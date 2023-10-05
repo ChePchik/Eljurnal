@@ -1,12 +1,10 @@
 import funcEJ as f
-
 while True:
   print('-----------------------------------')
   # clear()
-
+# '\033[31m'+
   print("что будем делать")
-
-
+  # print("0. Авторизоваться")
   print("1. Создать файлики")
   print("2. Продублировать темы в файлах")
   print("3. Создать файл spisok_students")
@@ -20,7 +18,10 @@ while True:
   # input('Какя директория: ')
 
 
-  if choice==1:
+  if choice==0:
+    f.auth()
+
+  elif choice==1:
     ch1 = int(input('Теория - 1\Практика - 2: '))
     f.createFile(ch1)
 
@@ -44,7 +45,7 @@ while True:
       f.saveThemesPracticy(ch41)
     else:
       print('NO')
-      # return 
+      # return
 
   elif choice==5:
     print('Будут проврены все столбцы, если даты есть всё правильно')
@@ -63,7 +64,7 @@ while True:
       f.closePractic(ch61)
     else:
       print('Попробуй ещё')
-      
+
 
   elif choice==7:
     ch7 = int(input('Теория - 1\\ Практика - 2: '))
